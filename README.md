@@ -1,3 +1,5 @@
+Internship project to get used to some development practices as well as the technologies being used in a future project. This is the front-end portion of the project only.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
