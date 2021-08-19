@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme: Theme) =>
     control: {
       padding: theme.spacing(2),
     },
+    form: {
+      backgroundColor: "white",
+    },
   })
 );
 
@@ -25,13 +28,15 @@ function AddBook() {
   return (
     <div>
       <Grid container className={styles.root} spacing={2}>
-        <Grid item xs={12}>
-          <Grid container justify="center">
-            <h1>Add A New Book</h1>
-          </Grid>
-          <Grid container justify="center" spacing={10}>
-            <Grid item xs={6}>
-              <AddForm />
+        <Grid container justify="center" xs={12}>
+          <Grid className={styles.form} item xs={6}>
+            <Grid container justify="center">
+              <h1>Add A New Book</h1>
+            </Grid>
+            <Grid container justify="center" spacing={10}>
+              <Grid item xs={6}>
+                <AddForm />
+              </Grid>
             </Grid>
           </Grid>
         </Grid>

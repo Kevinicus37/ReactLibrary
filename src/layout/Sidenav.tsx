@@ -1,13 +1,16 @@
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import HomeIcon from "@material-ui/icons/Home";
-import LibraryAddIcon from "@material-ui/icons/LibraryAdd";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Link } from "react-router-dom";
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
+import CreditCardIcon from '@material-ui/icons/CreditCard';
+import { clearPatronBooks } from "../features/books/bookSlice";
+import { useAppDispatch } from "../app/hooks";
+import LibraryAddCheckIcon from '@material-ui/icons/LibraryAddCheck';
 
 const useStyles = makeStyles((theme: Theme) => ({
   drawer: {
@@ -35,10 +38,24 @@ const useStyles = makeStyles((theme: Theme) => ({
 type SidenavProps = {
   isOpen: boolean;
   drawerToggler: Function;
+  handleCheckedOutEntry: Function;
 };
 
-export const Sidenav = ({ isOpen, drawerToggler }: SidenavProps) => {
+export const Sidenav = ({ isOpen, drawerToggler, handleCheckedOutEntry}: SidenavProps) => {
   const styles = useStyles();
+  //const dispatch = useAppDispatch();
+  
+  // const handleCheckedOutEntry = () => (event: any) => {    
+  //   if (
+  //     event.type === "keydown" &&
+  //     ((event as React.KeyboardEvent).key === "Tab" ||
+  //       (event as React.KeyboardEvent).key === "Shift")
+  //   ) {
+  //     return;
+  //   }
+
+  //   dispatch(clearPatronBooks(0));
+  //   drawerToggler(false)  }
 
   return (
     <Drawer
@@ -64,8 +81,35 @@ export const Sidenav = ({ isOpen, drawerToggler }: SidenavProps) => {
             to="/add"
             onClick={drawerToggler(false)}
           >
-            <HomeIcon className={styles.link} />
+            <LibraryAddIcon className={styles.link} />
             <ListItemText className={styles.link}>Add Books</ListItemText>
+          </ListItem>
+          <ListItem
+            button
+            component={Link}
+            to="/checked_out"
+            onClick={handleCheckedOutEntry(false)}
+          >
+            <LibraryAddCheckIcon className={styles.link} />
+            <ListItemText className={styles.link}>Return Books</ListItemText>
+          </ListItem>
+          <ListItem
+            button
+            component={Link}
+            to="/deleted"
+            onClick={drawerToggler(false)}
+          >
+            <DeleteSweepIcon className={styles.link} />
+            <ListItemText className={styles.link}>Recently Deleted</ListItemText>
+          </ListItem>
+          <ListItem
+            button
+            component={Link}
+            to="/patrons"
+            onClick={drawerToggler(false)}
+          >
+            <CreditCardIcon className={styles.link} />
+            <ListItemText className={styles.link}>Patrons</ListItemText>
           </ListItem>
         </List>
       </div>

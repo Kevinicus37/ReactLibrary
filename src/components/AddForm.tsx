@@ -1,4 +1,3 @@
-import TextField from "@material-ui/core/TextField";
 import { createStyles, Theme, makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
 import Input from "@material-ui/core/Input";
@@ -9,6 +8,16 @@ import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
+
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import { postBookAsync } from "../features/books/bookSlice";
+import { useAppDispatch } from "../app/hooks";
+import Book from "../types/Book";
+
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,22 +60,43 @@ function AddForm() {
   const [title, setTitle] = useState("");
   const [isbn, setIsbn] = useState("");
   const [year, setYear] = useState(0);
+  const [open, setOpen] = React.useState(false);
+  const [message, setMessage] = useState("");
+  const dispatch = useAppDispatch();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    let bookInfo = {
-      Title: title,
-      AuthorNames: names,
-      YearPublished: year,
-      Isbn: isbn,
+    const newBook: Book = {
+      bookId: 0,
+      title: title,
+      authors: names,
+      publishedYear: year,
+      isbn: isbn,
+      isOverdue: false,
     };
 
-    //console.log(names);
-    fetch("https://localhost:44345/api/Books", {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify(bookInfo),
-    }).then((response) => response.json());
+    const response = await dispatch(postBookAsync(newBook));
+    if (response.meta.requestStatus === "fulfilled") {
+      setMessage("The book was added successfully");
+    } else {
+      setMessage("A problem occurred when trying to add the book");
+    }
+
+    setOpen(true);
+
+    Array.from(document.querySelectorAll("input")).forEach(
+      (input) => (input.value = "")
+    );
+    setTitle("");
+    setIsbn("");
   };
 
   const handleAuthorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +123,6 @@ function AddForm() {
       <form
         onSubmit={handleSubmit}
         className={styles.form}
-        noValidate
         autoComplete="off"
       >
         <div className={styles.textField}>
@@ -104,6 +133,7 @@ function AddForm() {
               name="title"
               value={title}
               onChange={handleTitleChange}
+              required
             />
           </FormControl>
         </div>
@@ -165,6 +195,7 @@ function AddForm() {
               key={0}
               value={isbn}
               onChange={handleIsbnChange}
+              required
             />
           </FormControl>
         </div>
@@ -173,6 +204,11 @@ function AddForm() {
           Add Book
         </Button>
       </form>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="info">
+          {message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
